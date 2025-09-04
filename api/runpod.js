@@ -4,6 +4,8 @@ const ALLOWED_ORIGINS = new Set([
   'http://127.0.0.1:5173',
   'http://localhost:3000',        // CRA dev (if you use it)
   'http://127.0.0.1:3000',
+  'http://localhost:8080',        // CRA dev (if you use it)
+  'http://127.0.0.1:8080',
   'https://vercel-proxy-five-iota.vercel.app', // calling from same domain is fine too
   // add your production frontend domain here when you deploy it, e.g.:
   // 'https://your-frontend.vercel.app',
