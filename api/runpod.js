@@ -1,10 +1,34 @@
 // Serverless proxy function (Vercel)
-export default async function handler(req, res) {
-  // --- Allow your Lovable site to call this ---
-  res.setHeader('Access-Control-Allow-Origin', 'https://YOUR-LOVABLE-DOMAIN');
+const ALLOWED_ORIGINS = new Set([
+  'http://localhost:5173',        // Vite dev
+  'http://127.0.0.1:5173',
+  'http://localhost:3000',        // CRA dev (if you use it)
+  'http://127.0.0.1:3000',
+  'https://vercel-proxy-five-iota.vercel.app', // calling from same domain is fine too
+  // add your production frontend domain here when you deploy it, e.g.:
+  // 'https://your-frontend.vercel.app',
+  // 'https://www.yourcustomdomain.com',
+]);
+
+function setCors(req, res) {
+  const origin = req.headers.origin || '';
+  const allow = ALLOWED_ORIGINS.has(origin) ? origin : '';
+  if (allow) {
+    res.setHeader('Access-Control-Allow-Origin', allow);
+    res.setHeader('Vary', 'Origin');
+  }
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  if (req.method === 'OPTIONS') return res.status(204).end();
+  res.setHeader('Access-Control-Max-Age', '86400');
+}
+
+export default async function handler(req, res) {
+  setCors(req, res);
+
+  if (req.method === 'OPTIONS') {
+    // Preflight – return early with the CORS headers above
+    return res.status(204).end();
+  }
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Use POST' });
